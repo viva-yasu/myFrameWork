@@ -4,6 +4,7 @@ class DbManager
 {
     protected $connections = array();
     protected $repository_connection_map = array();
+    protected $repositories = array();
 
 
     public function connect($name, $params)
@@ -50,5 +51,19 @@ class DbManager
         }
         
         return $con;
+    }
+    
+    public function get($repository_name)
+    {
+        if(!isset($this->repositories[$repository_name])) {
+            $repository_class = $repository_name . 'Repository';
+            $con = $this->getConnectionForRepository($repository_name);
+            
+            $repository = new $repository_class($con);
+            
+            $this->repositories[$repository_name] = $repository;
+        }
+        
+        return $this->repositories[$repository_name];
     }
 }
